@@ -24,7 +24,7 @@ export function performCheckoutFullPageRedirect( url: string, siteSlug: string |
 	window.location.href = addUrlToPendingPageRedirect( url, siteSlug );
 }
 
-function addUrlToPendingPageRedirect( url: string, siteSlug: string | undefined ): string {
+export function addUrlToPendingPageRedirect( url: string, siteSlug: string | undefined ): string {
 	const { origin = 'https://wordpress.com' } = typeof window !== 'undefined' ? window.location : {};
 	const successUrlPath = `/checkout/thank-you/${ siteSlug || 'no-site' }/pending`;
 	const successUrlBase = `${ origin }${ successUrlPath }`;
