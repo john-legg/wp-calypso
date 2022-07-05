@@ -245,9 +245,9 @@ export default function useCreatePaymentCompleteCallback( {
 					debug( 'error while clearing localStorage cart' );
 				}
 
-				// We use window.location instead of page.redirect() so that the
-				// cookies are detected on fresh page load. Using page(url) will take
-				// to the log in page which we don't want.
+				// We use window.location instead of page() so that the cookies are
+				// detected on fresh page load. Using page(url) will take to the log in
+				// page which we don't want.
 				performCheckoutFullPageRedirect( url, siteSlug );
 				return;
 			}
