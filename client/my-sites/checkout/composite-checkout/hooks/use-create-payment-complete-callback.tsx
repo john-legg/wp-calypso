@@ -219,7 +219,7 @@ export default function useCreatePaymentCompleteCallback( {
 						domainName,
 						() => {
 							reloadCart();
-							performRedirect( url );
+							performRedirect( url, siteSlug );
 						},
 						reduxStore
 					);
@@ -245,14 +245,15 @@ export default function useCreatePaymentCompleteCallback( {
 					debug( 'error while clearing localStorage cart' );
 				}
 
-				// We use window.location instead of page.redirect() so that the cookies are detected on fresh page load.
-				// Using page.redirect() will take to the log in page which we don't want.
-				window.location.href = url;
+				// We use window.location instead of page.redirect() so that the
+				// cookies are detected on fresh page load. Using page(url) will take
+				// to the log in page which we don't want.
+				performFullPageRedirect( url, siteSlug );
 				return;
 			}
 
 			reloadCart();
-			performRedirect( url );
+			performRedirect( url, siteSlug );
 		},
 		[
 			reloadCart,
@@ -283,13 +284,40 @@ export default function useCreatePaymentCompleteCallback( {
 	);
 }
 
-function performRedirect( url: string ): void {
-	try {
-		window.scrollTo( 0, 0 );
-		page( url );
-	} catch ( err ) {
-		window.location.href = url;
+function performRedirect( url: string, siteSlug: string | undefined ): void {
+	if ( ! isRelativeUrl( url ) ) {
+		return performFullPageRedirect( url, siteSlug );
 	}
+	try {
+		performSPARedirect( url, siteSlug );
+	} catch ( err ) {
+		performFullPageRedirect( url, siteSlug );
+	}
+}
+
+function isRelativeUrl( url: string ): boolean {
+	return url.startsWith( '/' ) && ! url.startsWith( '//' );
+}
+
+function performSPARedirect( url: string, siteSlug: string | undefined ): void {
+	window.scrollTo( 0, 0 );
+	page( addUrlToPendingPageRedirect( url, siteSlug ) );
+}
+
+function performFullPageRedirect( url: string, siteSlug: string | undefined ): void {
+	window.location.href = addUrlToPendingPageRedirect( url, siteSlug );
+}
+
+function addUrlToPendingPageRedirect( url: string, siteSlug: string | undefined ): string {
+	const { origin = 'https://wordpress.com' } = typeof window !== 'undefined' ? window.location : {};
+	const successUrlPath = `/checkout/thank-you/${ siteSlug || 'no-site' }/pending`;
+	const successUrlBase = `${ origin }${ successUrlPath }`;
+	const successUrlObject = new URL( successUrlBase );
+	successUrlObject.searchParams.set( 'redirectTo', url );
+	if ( isRelativeUrl( url ) ) {
+		return successUrlObject.pathname + successUrlObject.search + successUrlObject.hash;
+	}
+	return successUrlObject.href;
 }
 
 function displayRenewalSuccessNotice(
