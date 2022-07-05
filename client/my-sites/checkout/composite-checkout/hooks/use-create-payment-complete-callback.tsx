@@ -3,7 +3,6 @@ import { useShoppingCart } from '@automattic/shopping-cart';
 import { resolveDeviceTypeByViewPort } from '@automattic/viewport';
 import debugFactory from 'debug';
 import { useTranslate } from 'i18n-calypso';
-import page from 'page';
 import { useCallback } from 'react';
 import { useSelector, useDispatch, useStore } from 'react-redux';
 import { useLocalizedMoment } from 'calypso/components/localized-moment';
@@ -41,6 +40,7 @@ import {
 import { getSelectedSite, getSelectedSiteId } from 'calypso/state/ui/selectors';
 import { recordCompositeCheckoutErrorDuringAnalytics } from '../lib/analytics';
 import normalizeTransactionResponse from '../lib/normalize-transaction-response';
+import { performCheckoutFullPageRedirect, performCheckoutRedirect } from '../lib/pending-page';
 import { translateCheckoutPaymentMethodToWpcomPaymentMethod } from '../lib/translate-payment-method-names';
 import getThankYouPageUrl from './use-get-thank-you-url/get-thank-you-page-url';
 import type {
@@ -219,7 +219,7 @@ export default function useCreatePaymentCompleteCallback( {
 						domainName,
 						() => {
 							reloadCart();
-							performRedirect( url, siteSlug );
+							performCheckoutRedirect( url, siteSlug );
 						},
 						reduxStore
 					);
@@ -248,12 +248,12 @@ export default function useCreatePaymentCompleteCallback( {
 				// We use window.location instead of page.redirect() so that the
 				// cookies are detected on fresh page load. Using page(url) will take
 				// to the log in page which we don't want.
-				performFullPageRedirect( url, siteSlug );
+				performCheckoutFullPageRedirect( url, siteSlug );
 				return;
 			}
 
 			reloadCart();
-			performRedirect( url, siteSlug );
+			performCheckoutRedirect( url, siteSlug );
 		},
 		[
 			reloadCart,
@@ -282,42 +282,6 @@ export default function useCreatePaymentCompleteCallback( {
 			domains,
 		]
 	);
-}
-
-function performRedirect( url: string, siteSlug: string | undefined ): void {
-	if ( ! isRelativeUrl( url ) ) {
-		return performFullPageRedirect( url, siteSlug );
-	}
-	try {
-		performSPARedirect( url, siteSlug );
-	} catch ( err ) {
-		performFullPageRedirect( url, siteSlug );
-	}
-}
-
-function isRelativeUrl( url: string ): boolean {
-	return url.startsWith( '/' ) && ! url.startsWith( '//' );
-}
-
-function performSPARedirect( url: string, siteSlug: string | undefined ): void {
-	window.scrollTo( 0, 0 );
-	page( addUrlToPendingPageRedirect( url, siteSlug ) );
-}
-
-function performFullPageRedirect( url: string, siteSlug: string | undefined ): void {
-	window.location.href = addUrlToPendingPageRedirect( url, siteSlug );
-}
-
-function addUrlToPendingPageRedirect( url: string, siteSlug: string | undefined ): string {
-	const { origin = 'https://wordpress.com' } = typeof window !== 'undefined' ? window.location : {};
-	const successUrlPath = `/checkout/thank-you/${ siteSlug || 'no-site' }/pending`;
-	const successUrlBase = `${ origin }${ successUrlPath }`;
-	const successUrlObject = new URL( successUrlBase );
-	successUrlObject.searchParams.set( 'redirectTo', url );
-	if ( isRelativeUrl( url ) ) {
-		return successUrlObject.pathname + successUrlObject.search + successUrlObject.hash;
-	}
-	return successUrlObject.href;
 }
 
 function displayRenewalSuccessNotice(
