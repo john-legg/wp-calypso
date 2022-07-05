@@ -43,6 +43,16 @@ export const HelpCenterEmbedResult: React.FC = () => {
 		}
 	};
 
+	const handleArticleClick = ( event: React.MouseEvent< HTMLDivElement > ) => {
+		const target = event.target as HTMLElement;
+		const href = target?.getAttribute( 'href' );
+
+		if ( href ) {
+			event.preventDefault();
+			window.open( href, '_blank' );
+		}
+	};
+
 	return (
 		<div className="help-center-embed-result">
 			<Flex justify="space-between">
@@ -60,7 +70,12 @@ export const HelpCenterEmbedResult: React.FC = () => {
 					</Button>
 				</FlexItem>
 			</Flex>
-			<ArticleContent postId={ postId } blogId={ blogId } articleUrl={ null } />
+			{ /*
+				eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+			*/ }
+			<div onClick={ handleArticleClick }>
+				<ArticleContent postId={ postId } blogId={ blogId } articleUrl={ null } />
+			</div>
 		</div>
 	);
 };
