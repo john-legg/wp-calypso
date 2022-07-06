@@ -56,7 +56,8 @@ export function addUrlToPendingPageRedirect(
 ): string {
 	const { origin = 'https://wordpress.com' } = typeof window !== 'undefined' ? window.location : {};
 	const successUrlPath =
-		`/checkout/thank-you/${ siteSlug || 'no-site' }/pending` + ( orderId ? `/${ orderId }` : '' );
+		`/checkout/thank-you/${ siteSlug || 'no-site' }/pending/` +
+		( orderId ? `${ orderId }` : ':orderId' );
 	const successUrlBase = `${ origin }${ successUrlPath }`;
 	const successUrlObject = new URL( successUrlBase );
 	successUrlObject.searchParams.set( 'redirectTo', url );
