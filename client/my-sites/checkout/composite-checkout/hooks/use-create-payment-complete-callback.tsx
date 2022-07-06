@@ -40,7 +40,7 @@ import {
 import { getSelectedSite, getSelectedSiteId } from 'calypso/state/ui/selectors';
 import { recordCompositeCheckoutErrorDuringAnalytics } from '../lib/analytics';
 import normalizeTransactionResponse from '../lib/normalize-transaction-response';
-import { performCheckoutFullPageRedirect, performCheckoutRedirect } from '../lib/pending-page';
+import { absoluteRedirectThroughPending, redirectThroughPending } from '../lib/pending-page';
 import { translateCheckoutPaymentMethodToWpcomPaymentMethod } from '../lib/translate-payment-method-names';
 import getThankYouPageUrl from './use-get-thank-you-url/get-thank-you-page-url';
 import type {
@@ -219,7 +219,7 @@ export default function useCreatePaymentCompleteCallback( {
 						domainName,
 						() => {
 							reloadCart();
-							performCheckoutRedirect( url, siteSlug );
+							redirectThroughPending( url, siteSlug );
 						},
 						reduxStore
 					);
@@ -246,14 +246,14 @@ export default function useCreatePaymentCompleteCallback( {
 				}
 
 				// We use window.location instead of page() so that the cookies are
-				// detected on fresh page load. Using page(url) will take to the log in
-				// page which we don't want.
-				performCheckoutFullPageRedirect( url, siteSlug );
+				// detected on fresh page load. Using page(url) will take us to the
+				// log-in page which we don't want.
+				absoluteRedirectThroughPending( url, siteSlug );
 				return;
 			}
 
 			reloadCart();
-			performCheckoutRedirect( url, siteSlug );
+			redirectThroughPending( url, siteSlug );
 		},
 		[
 			reloadCart,

@@ -3,14 +3,14 @@ import page from 'page';
 /**
  * Redirect to a checkout pending page and from there to a (relative or absolute) url.
  */
-export function performCheckoutRedirect( url: string, siteSlug: string | undefined ): void {
+export function redirectThroughPending( url: string, siteSlug: string | undefined ): void {
 	if ( ! isRelativeUrl( url ) ) {
-		return performCheckoutFullPageRedirect( url, siteSlug );
+		return absoluteRedirectThroughPending( url, siteSlug );
 	}
 	try {
-		performCheckoutSPARedirect( url, siteSlug );
+		relativeRedirectThroughPending( url, siteSlug );
 	} catch ( err ) {
-		performCheckoutFullPageRedirect( url, siteSlug );
+		absoluteRedirectThroughPending( url, siteSlug );
 	}
 }
 
@@ -21,7 +21,7 @@ function isRelativeUrl( url: string ): boolean {
 /**
  * Redirect to a checkout pending page and from there to a relative url.
  */
-export function performCheckoutSPARedirect( url: string, siteSlug: string | undefined ): void {
+export function relativeRedirectThroughPending( url: string, siteSlug: string | undefined ): void {
 	window.scrollTo( 0, 0 );
 	page( addUrlToPendingPageRedirect( url, siteSlug, 'relative' ) );
 }
@@ -29,7 +29,7 @@ export function performCheckoutSPARedirect( url: string, siteSlug: string | unde
 /**
  * Redirect to a checkout pending page and from there to an absolute url.
  */
-export function performCheckoutFullPageRedirect( url: string, siteSlug: string | undefined ): void {
+export function absoluteRedirectThroughPending( url: string, siteSlug: string | undefined ): void {
 	window.location.href = addUrlToPendingPageRedirect( url, siteSlug, 'absolute' );
 }
 
