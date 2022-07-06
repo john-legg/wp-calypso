@@ -30,7 +30,6 @@ import hasActiveHappychatSession from 'calypso/state/happychat/selectors/has-act
 import isHappychatOpen from 'calypso/state/happychat/selectors/is-happychat-open';
 import { getCurrentOAuth2Client } from 'calypso/state/oauth2-clients/ui/selectors';
 import { getPreference } from 'calypso/state/preferences/selectors';
-import getCurrentLocaleSlug from 'calypso/state/selectors/get-current-locale-slug';
 import isAtomicSite from 'calypso/state/selectors/is-site-automated-transfer';
 import { isJetpackSite } from 'calypso/state/sites/selectors';
 import { isSupportSession } from 'calypso/state/support/selectors';
@@ -372,17 +371,12 @@ export default withCurrentRoute(
 		const userId = getCurrentUserId( state );
 		const currentSegment = 10; //percentage of users that will not see the FAB, but the Help Center
 		const userSegment = userId % 100;
-		const locale = getCurrentLocaleSlug( state );
 		const isEditor = getSectionName( state ) === 'gutenberg-editor';
 		const isHelpCenterEnabled = config.isEnabled( 'editor/help-center' );
 		const isSimpleSite = window.location.host.endsWith( '.wordpress.com' );
 
 		const disableFAB =
-			isSimpleSite &&
-			isHelpCenterEnabled &&
-			locale === 'en' &&
-			isEditor &&
-			userSegment < currentSegment;
+			isSimpleSite && isHelpCenterEnabled && isEditor && userSegment < currentSegment;
 
 		return {
 			masterbarIsHidden,
