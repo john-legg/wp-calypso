@@ -226,7 +226,9 @@ export function checkoutPending( context, next ) {
 }
 
 export function checkoutThankYou( context, next ) {
-	const receiptId = Number( context.params.receiptId );
+	const receiptId = Number.isInteger( Number( context.params.receiptId ) )
+		? Number( context.params.receiptId )
+		: undefined;
 	const gsuiteReceiptId = Number( context.params.gsuiteReceiptId ) || 0;
 
 	const state = context.store.getState();
