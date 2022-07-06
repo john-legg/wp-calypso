@@ -112,6 +112,11 @@ function CheckoutPending( {
 
 				didRedirect.current = true;
 
+				if ( redirectTo?.includes( ':receiptId' ) ) {
+					performRedirect( redirectTo.replace( ':receiptId', `${ receiptId }` ) );
+					return;
+				}
+
 				// Only treat `/pending` as a placeholder if it's the end of the URL
 				// pathname, but preserve query strings or hashes.
 				const receiptPlaceholderRegexp = /\/pending([?#]|$)/;
