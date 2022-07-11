@@ -5,7 +5,7 @@ import { useI18n } from '@wordpress/react-i18n';
 import { useSelector } from 'react-redux';
 import getSites from 'calypso/state/selectors/get-sites';
 import { notNullish } from '../util';
-import { SitesTable } from './sites-table';
+import { SitesContainer } from './sites-container';
 import { SitesTableFilterTabs } from './sites-table-filter-tabs';
 
 interface SitesDashboardProps {
@@ -85,17 +85,8 @@ export function SitesDashboard( { launchStatus }: SitesDashboardProps ) {
 							` }
 							launchStatus={ launchStatus }
 						>
-							{ ( filteredSites ) => (
-								<ClassNames>
-									{ ( { css } ) => (
-										<SitesTable
-											className={ css`
-												margin-top: 32px;
-											` }
-											sites={ filteredSites }
-										/>
-									) }
-								</ClassNames>
+							{ ( filteredSites, filter ) => (
+								<SitesContainer sites={ filteredSites } filter={ filter } />
 							) }
 						</SitesTableFilterTabs>
 					) }
