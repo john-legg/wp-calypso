@@ -85,8 +85,8 @@ export function SitesDashboard( { launchStatus }: SitesDashboardProps ) {
 							` }
 							launchStatus={ launchStatus }
 						>
-							{ ( filteredSites, filter ) => (
-								<SitesContainer sites={ filteredSites } filter={ filter } />
+							{ ( filteredSites, status ) => (
+								<SitesContainer sites={ filteredSites } status={ status } />
 							) }
 						</SitesTableFilterTabs>
 					) }
